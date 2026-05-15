@@ -1,6 +1,6 @@
 FROM runpod/worker-comfyui:5.7.1-base
 
-WORKDIR /workspace
+WORKDIR /opt/bfs-v2
 
 RUN cp /handler.py /handler_base.py
 
@@ -11,8 +11,8 @@ RUN apt-get update \
 RUN cd /comfyui && git fetch origin && git checkout c011fb520c79b9dfbe7f885d613771774f746eef
 RUN pip install --no-cache-dir --break-system-packages comfy-kitchen==0.2.8 comfy-aimdo==0.3.0
 
-COPY requirements.txt /workspace/requirements.txt
-RUN /opt/venv/bin/python -m pip install --no-cache-dir -r /workspace/requirements.txt \
+COPY requirements.txt /opt/bfs-v2/requirements.txt
+RUN /opt/venv/bin/python -m pip install --no-cache-dir -r /opt/bfs-v2/requirements.txt \
   && /opt/venv/bin/python -c "import sageattention; import triton"
 
 RUN git clone https://github.com/Kosinkadink/ComfyUI-VideoHelperSuite.git /comfyui/custom_nodes/ComfyUI-VideoHelperSuite \
@@ -61,14 +61,15 @@ RUN git clone https://github.com/alisson-anjos/ComfyUI-BFSNodes.git /comfyui/cus
 COPY vendor/ComfyUI-VideoOutputBridge /comfyui/custom_nodes/ComfyUI-VideoOutputBridge
 
 ENV COMFY_ROOT=/comfyui
-ENV NETWORK_VOLUME_ROOT=/runpod-volume
+ENV NETWORK_VOLUME_ROOT=/workspace
 ENV NETWORK_VOLUME_CACHE_MODE=read_only
-ENV PYTHONPATH=/workspace
+ENV ASSET_MANIFEST_PATH=/opt/bfs-v2/asset-manifest.json
+ENV PYTHONPATH=/opt/bfs-v2
 
-COPY asset-manifest.json /workspace/asset-manifest.json
-COPY workflows /workspace/workflows
-COPY workflow_builder.py /workspace/workflow_builder.py
-COPY bootstrap.py /workspace/bootstrap.py
+COPY asset-manifest.json /opt/bfs-v2/asset-manifest.json
+COPY workflows /opt/bfs-v2/workflows
+COPY workflow_builder.py /opt/bfs-v2/workflow_builder.py
+COPY bootstrap.py /opt/bfs-v2/bootstrap.py
 COPY handler.py /handler.py
 
 CMD ["/start.sh"]

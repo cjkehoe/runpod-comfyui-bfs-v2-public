@@ -41,9 +41,11 @@ class DockerfileStartupTests(unittest.TestCase):
     def test_dockerfile_sets_pythonpath_for_handler_imports(self):
         dockerfile = Path(__file__).with_name("Dockerfile").read_text(encoding="utf-8")
 
-        self.assertIn("ENV PYTHONPATH=/workspace", dockerfile)
-        self.assertIn("COPY workflow_builder.py /workspace/workflow_builder.py", dockerfile)
-        self.assertIn("COPY workflows /workspace/workflows", dockerfile)
+        self.assertIn("ENV PYTHONPATH=/opt/bfs-v2", dockerfile)
+        self.assertIn("ENV ASSET_MANIFEST_PATH=/opt/bfs-v2/asset-manifest.json", dockerfile)
+        self.assertIn("ENV NETWORK_VOLUME_ROOT=/workspace", dockerfile)
+        self.assertIn("COPY workflow_builder.py /opt/bfs-v2/workflow_builder.py", dockerfile)
+        self.assertIn("COPY workflows /opt/bfs-v2/workflows", dockerfile)
 
 
 if __name__ == "__main__":
