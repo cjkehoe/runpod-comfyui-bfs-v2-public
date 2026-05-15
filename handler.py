@@ -705,7 +705,9 @@ def handler(job: Dict[str, Any]) -> Any:
     _refresh_comfy_file_cache(core_model_paths | runtime_model_paths)
     metadata = _extract_metadata(execution_payload)
 
-    result = BASE_HANDLER({"input": execution_payload})
+    base_job = dict(job)
+    base_job["input"] = execution_payload
+    result = BASE_HANDLER(base_job)
     return _normalize_video_output(result, metadata)
 
 

@@ -79,6 +79,7 @@ class BfsV2HandlerTests(unittest.TestCase):
             ), patch.object(handler, "_refresh_comfy_file_cache", return_value=None, create=True):
                 result = handler.handler(
                     {
+                        "id": "runpod-job-123",
                         "input": {
                             "workflow_id": "bfs_ltx23_head_swap_v2",
                             "source_face_image_url": "https://cdn.example.com/source.png?token=redacted",
@@ -91,6 +92,7 @@ class BfsV2HandlerTests(unittest.TestCase):
 
             staged_inputs = list((handler.COMFY_ROOT / "input").glob("*"))
             self.assertEqual(len(staged_inputs), 2)
+            self.assertEqual(captured_job["value"]["id"], "runpod-job-123")
             self.assertIn("workflow", captured_job["value"]["input"])
             self.assertNotIn("model_downloads", captured_job["value"]["input"])
             self.assertEqual(result["workflow_id"], "bfs_ltx23_head_swap_v2")
