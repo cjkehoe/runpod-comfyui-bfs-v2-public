@@ -67,6 +67,7 @@ The Black Forest Labs Flux Klein upstream URL returned 403 even with `HF_TOKEN`,
 - `python -m json.tool asset-manifest.json >/dev/null` passes.
 - `python -m json.tool workflows/workflow_ltx2_head_swap_drag_and_drop_v2.0.source.json >/dev/null` passes.
 - `git diff --check` passes.
+- `python -u scripts/verify_endpoint_ready.py` returns `ok: true` against the live endpoint/template and prewarm job.
 - Prewarm completed on RunPod job `4c3690e4-ab6f-442b-8ff7-46da0954cb35-e1`.
   - Queue delay: `205120` ms
   - Execution time: `881093` ms

@@ -68,6 +68,12 @@ Prewarm:
 python -u scripts/smoke_submit.py --endpoint-id <endpoint> --prewarm
 ```
 
+Verify endpoint readiness without printing secret values:
+
+```bash
+python -u scripts/verify_endpoint_ready.py
+```
+
 Smoke:
 
 ```bash
