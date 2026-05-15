@@ -16,6 +16,12 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from workflow_builder import BFS_V2_DEFAULT_PROMPT, BFS_V2_WORKFLOW_ID  # noqa: E402
+from scripts.sign_user_media_url import (  # noqa: E402
+    DEFAULT_TARGET_KEY,
+    _build_presigned_url,
+    _config_from_env,
+    _load_env_file,
+)
 
 
 def _read_runpod_api_key() -> str:
@@ -71,11 +77,12 @@ def _build_payload(args: argparse.Namespace) -> Dict[str, Any]:
     if args.prewarm:
         return {"input": {"action": "prewarm_core_models", "workflow_id": args.workflow_id}}
 
+    target_video_url = _resolve_target_video_url(args)
     return {
         "input": {
             "workflow_id": args.workflow_id,
             "source_face_image_url": args.source_face_image_url,
-            "target_video_url": args.target_video_url,
+            "target_video_url": target_video_url,
             "prompt": _read_prompt(args),
             "negative_prompt": args.negative_prompt,
             "duration": args.duration,
@@ -88,6 +95,17 @@ def _build_payload(args: argparse.Namespace) -> Dict[str, Any]:
             },
         }
     }
+
+
+def _resolve_target_video_url(args: argparse.Namespace) -> str:
+    if args.target_video_url:
+        return args.target_video_url
+    if not args.target_video_r2_key:
+        raise SystemExit("--target-video-url or --target-video-r2-key is required unless --prewarm is set")
+
+    _load_env_file(args.r2_env_file)
+    config = _config_from_env(args.target_video_r2_bucket)
+    return _build_presigned_url(config, args.target_video_r2_key.strip().lstrip("/"), args.r2_url_expires_in)
 
 
 def _submit(endpoint_id: str, api_key: str, payload: Dict[str, Any]) -> str:
@@ -192,6 +210,14 @@ def parse_args(argv: List[str]) -> argparse.Namespace:
     parser.add_argument("--workflow-id", default=BFS_V2_WORKFLOW_ID)
     parser.add_argument("--source-face-image-url", help="HTTPS URL for the source face/head image.")
     parser.add_argument("--target-video-url", help="Fresh HTTPS URL for the target guide MP4.")
+    parser.add_argument(
+        "--target-video-r2-key",
+        default=None,
+        help=f"Sign this R2 object key in memory and use it as target_video_url. Default CEL-200 key: {DEFAULT_TARGET_KEY}",
+    )
+    parser.add_argument("--target-video-r2-bucket", help="Override R2 user-media bucket for --target-video-r2-key.")
+    parser.add_argument("--r2-env-file", type=Path, help="Optional ignored local env file for R2 signing vars.")
+    parser.add_argument("--r2-url-expires-in", type=int, default=3600, help="TTL for URLs minted from --target-video-r2-key.")
     parser.add_argument("--prewarm", action="store_true", help="Only prewarm core models for --workflow-id.")
     parser.add_argument("--prompt", help="Optional BFS V2 prompt. Defaults to the author trigger, head_swap.")
     parser.add_argument("--prompt-file", type=Path, help="Read optional BFS V2 prompt from a local file.")
@@ -213,8 +239,10 @@ def parse_args(argv: List[str]) -> argparse.Namespace:
         raise SystemExit(f"--workflow-id must be {BFS_V2_WORKFLOW_ID}")
     if not args.prewarm and not args.source_face_image_url:
         raise SystemExit("--source-face-image-url is required unless --prewarm is set")
-    if not args.prewarm and not args.target_video_url:
-        raise SystemExit("--target-video-url is required unless --prewarm is set")
+    if not args.prewarm and bool(args.target_video_url) == bool(args.target_video_r2_key):
+        raise SystemExit("Use exactly one of --target-video-url or --target-video-r2-key unless --prewarm is set")
+    if args.r2_url_expires_in < 60 or args.r2_url_expires_in > 604800:
+        raise SystemExit("--r2-url-expires-in must be between 60 and 604800 seconds")
     if args.prompt and args.prompt_file:
         raise SystemExit("Use either --prompt or --prompt-file, not both")
     return args
@@ -222,6 +250,8 @@ def parse_args(argv: List[str]) -> argparse.Namespace:
 
 def main(argv: List[str]) -> int:
     args = parse_args(argv)
+    if not args.prewarm and args.target_video_r2_key:
+        args.target_video_url = _resolve_target_video_url(args)
     if not args.prewarm and not args.skip_url_preflight:
         _preflight_url("source_face_image_url", args.source_face_image_url)
         _preflight_url("target_video_url", args.target_video_url)

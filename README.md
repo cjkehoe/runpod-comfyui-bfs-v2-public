@@ -91,6 +91,17 @@ python -u scripts/sign_user_media_url.py \
 
 The helper reads only environment variables or an optional ignored local env file passed with `--env-file`; do not commit credentials or generated signed URLs.
 
+To avoid writing the signed target URL into shell history, the smoke script can sign the exact object key in memory:
+
+```bash
+python -u scripts/smoke_submit.py \
+  --endpoint-id <endpoint> \
+  --source-face-image-url '<source face image URL>' \
+  --target-video-r2-key videos/d58e5d9e-1a89-4652-96e3-f37505cbf0c7_65dad7b8c1b44de2.mp4 \
+  --verify-audio \
+  --download-output outputs/bfs-v2-smoke.mp4
+```
+
 ## Validation
 
 ```bash
