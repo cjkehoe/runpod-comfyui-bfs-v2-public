@@ -81,6 +81,16 @@ python -u scripts/smoke_submit.py \
 
 If a signed target MP4 URL returns `403 Forbidden` or is already past its signing window, request a fresh URL and do not substitute another video.
 
+If approved production R2 signing credentials are available locally, mint a fresh URL for the exact CEL-200 target object with:
+
+```bash
+python -u scripts/sign_user_media_url.py \
+  --key videos/d58e5d9e-1a89-4652-96e3-f37505cbf0c7_65dad7b8c1b44de2.mp4 \
+  --expires-in 3600
+```
+
+The helper reads only environment variables or an optional ignored local env file passed with `--env-file`; do not commit credentials or generated signed URLs.
+
 ## Validation
 
 ```bash
