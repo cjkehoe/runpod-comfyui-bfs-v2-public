@@ -66,6 +66,34 @@ class BfsV2BootstrapTests(unittest.TestCase):
 
             download.assert_not_called()
 
+    def test_download_file_writes_part_file_then_renames(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            destination = Path(temp_dir) / "model.safetensors"
+
+            class FakeResponse:
+                def __enter__(self):
+                    return self
+
+                def __exit__(self, exc_type, exc, traceback):
+                    return False
+
+                def raise_for_status(self):
+                    return None
+
+                def iter_content(self, chunk_size):
+                    yield b"model"
+                    self.partial_exists_during_stream = destination.with_name("model.safetensors.part").exists()
+                    yield b"-bytes"
+
+            response = FakeResponse()
+            with patch.object(bootstrap.requests, "get", return_value=response) as request_get:
+                bootstrap._download_file("https://models.example.com/model.safetensors", destination)
+
+            request_get.assert_called_once()
+            self.assertTrue(response.partial_exists_during_stream)
+            self.assertEqual(destination.read_bytes(), b"model-bytes")
+            self.assertFalse(destination.with_name("model.safetensors.part").exists())
+
 
 if __name__ == "__main__":
     unittest.main()

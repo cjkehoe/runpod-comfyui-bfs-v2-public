@@ -37,12 +37,16 @@ def _request_headers_for_url(url: str) -> Dict[str, str]:
 
 def _download_file(url: str, destination: Path) -> None:
     destination.parent.mkdir(parents=True, exist_ok=True)
+    partial_destination = destination.with_name(f"{destination.name}.part")
+    if partial_destination.exists():
+        partial_destination.unlink()
     with requests.get(url, stream=True, timeout=600, headers=_request_headers_for_url(url)) as response:
         response.raise_for_status()
-        with destination.open("wb") as output_file:
+        with partial_destination.open("wb") as output_file:
             for chunk in response.iter_content(chunk_size=1024 * 1024):
                 if chunk:
                     output_file.write(chunk)
+    partial_destination.replace(destination)
 
 
 def _copy_file(source: Path, destination: Path) -> None:
@@ -109,4 +113,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-
