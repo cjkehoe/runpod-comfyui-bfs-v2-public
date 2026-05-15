@@ -107,7 +107,7 @@ git diff --check
 - Endpoint name: `runpod-comfyui-bfs-v2-public`
 - Template ID: `27upkmyvti`
 - GitHub repo: `https://github.com/cjkehoe/runpod-comfyui-bfs-v2-public`
-- Latest source commit: `3946afe`
+- Latest source commit: see `git rev-parse --short HEAD`; completion evidence is tracked in `docs/cel-200-completion-audit.md`.
 - RunPod image observed after releases: `registry.runpod.net/cjkehoe-runpod-comfyui-bfs-v2-public-main-dockerfile:80877f353`
 - Releases published to trigger native GitHub rebuild: `bfs-v2-flux-mirror-20260515`, `v0.2.0-bfs-v2-flux-mirror`
 - Current endpoint config: `workersMax: 1`, `workersMin: 0`, no network volume, H100 80GB-class GPU pool, 150 GB container disk, `executionTimeoutMs: 7200000`.
