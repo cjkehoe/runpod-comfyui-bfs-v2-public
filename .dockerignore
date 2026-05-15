@@ -5,6 +5,7 @@ __pycache__/
 *.py[cod]
 .codex-tmp/
 benchmarks/
+.runpod-results/
 outputs/
 .env
 .env.*
