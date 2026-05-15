@@ -62,15 +62,15 @@ The Black Forest Labs Flux Klein upstream URL returned 403 even with `HF_TOKEN`,
 
 ## Validation Completed
 
-- `python -m unittest -v` passes 26 tests.
+- `python -m unittest -v` passes 29 tests.
 - `python -m compileall .` passes.
 - `python -m json.tool asset-manifest.json >/dev/null` passes.
 - `python -m json.tool workflows/workflow_ltx2_head_swap_drag_and_drop_v2.0.source.json >/dev/null` passes.
 - `git diff --check` passes.
 - `python -u scripts/verify_endpoint_ready.py` returns `ok: true` against the live endpoint/template and prewarm job.
-- Prewarm completed on RunPod job `4c3690e4-ab6f-442b-8ff7-46da0954cb35-e1`.
-  - Queue delay: `205120` ms
-  - Execution time: `881093` ms
+- Prewarm completed on RunPod job `8d4d5d25-60ed-425f-89b0-b18acf43c82b-e2`.
+  - Queue delay: `181778` ms
+  - Execution time: `199051` ms
   - Downloaded core model paths: `models/diffusion_models`, `models/latent_upscale_models`, `models/loras`, `models/loras/ltx-2`, `models/text_encoders`, `models/vae`
 
 Cache caveat: there is no network volume and `workersMin` is zero, so prewarm proves that the full model set can download successfully but does not guarantee persistence until a future smoke job.

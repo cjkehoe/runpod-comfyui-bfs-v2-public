@@ -117,7 +117,7 @@ def parse_args(argv: List[str]) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Verify sanitized BFS V2 RunPod endpoint readiness.")
     parser.add_argument("--endpoint-id", default="0apsddjr33ry7p")
     parser.add_argument("--template-id", default="27upkmyvti")
-    parser.add_argument("--prewarm-job-id", default="4c3690e4-ab6f-442b-8ff7-46da0954cb35-e1")
+    parser.add_argument("--prewarm-job-id", default="8d4d5d25-60ed-425f-89b0-b18acf43c82b-e2")
     return parser.parse_args(argv)
 
 

@@ -17,9 +17,9 @@ Create a dedicated RunPod/ComfyUI endpoint that runs Alissonerdx BFS Best-Face-S
 | Add workflow ID | `bfs_ltx23_head_swap_v2` | Complete |
 | Identify custom nodes and model assets | `asset-manifest.json`; Dockerfile pins custom node revisions | Complete |
 | Add smoke submit and polling support | `scripts/smoke_submit.py` with prewarm, submit, poll, output download, ffprobe support, URL preflight, and in-memory R2 target signing via `--target-video-r2-key` | Complete |
-| Local validation | `python -m unittest -v` passes 26 tests; `python -m compileall .`, JSON checks, and `git diff --check` passed after latest smoke tooling changes | Complete |
+| Local validation | `python -m unittest -v` passes 29 tests; `python -m compileall .`, JSON checks, and `git diff --check` passed after latest smoke tooling changes | Complete |
 | Endpoint readiness verifier | `python -u scripts/verify_endpoint_ready.py` returns `ok: true`, all checks true, and no missing env keys | Complete |
-| Prewarm/download model set | RunPod job `4c3690e4-ab6f-442b-8ff7-46da0954cb35-e1` completed; execution `881093` ms; model paths downloaded. Current endpoint has no network volume and `workersMin: 0`, so a later cold worker may need to re-download models. | Complete, but cache persistence is weak |
+| Prewarm/download model set | RunPod job `8d4d5d25-60ed-425f-89b0-b18acf43c82b-e2` completed; queue delay `181778` ms; execution `199051` ms; model paths downloaded. Current endpoint has no network volume and `workersMin: 0`, so a later cold worker may need to re-download models. | Complete, but cache persistence is weak |
 | Submit one real test using provided media | Target MP4 signed URL fails preflight with HTTP 403; no substitute media used | Blocked |
 | Verify output MP4 reachable | No real generation output yet | Blocked |
 | Run ffprobe for video/audio streams | No real generation output yet | Blocked |
@@ -33,7 +33,7 @@ Create a dedicated RunPod/ComfyUI endpoint that runs Alissonerdx BFS Best-Face-S
 - Image observed: `registry.runpod.net/cjkehoe-runpod-comfyui-bfs-v2-public-main-dockerfile:80877f353`
 - Template env keys: `HF_TOKEN`, `BFS_V2_FLUX_KLEIN_URL`, `BUCKET_ENDPOINT_URL`, `BUCKET_ACCESS_KEY_ID`, `BUCKET_SECRET_ACCESS_KEY`, `OUTPUT_BUCKET_NAME`, `OUTPUT_PUBLIC_BASE`
 - Endpoint config: `workersMax: 1`, `workersMin: 0`, `workersStandby: 1`, no network volume, 150 GB container disk, H100 80GB-class GPU pool, 2-hour execution timeout
-- Prewarm result: completed on job `4c3690e4-ab6f-442b-8ff7-46da0954cb35-e1`
+- Prewarm result: completed on job `8d4d5d25-60ed-425f-89b0-b18acf43c82b-e2`
 - Cache note: because there is no network volume and `workersMin` is zero, prewarm proves the model set can download successfully but does not guarantee model files persist until a future smoke job. If a fresh signed URL is not available immediately, expect the smoke job to incur cold-start/model-download time again.
 - Output storage note: the experiment template has the same `runpod/worker-comfyui` output bucket env keys used by the working I2V template, so the future smoke job should be able to return a reachable MP4 URL if generation succeeds.
 - Readiness verifier: `python -u scripts/verify_endpoint_ready.py` passes against the live endpoint/template and prewarm job.

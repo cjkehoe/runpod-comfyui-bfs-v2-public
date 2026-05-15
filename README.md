@@ -129,6 +129,6 @@ git diff --check
 - Releases published to trigger native GitHub rebuild: `bfs-v2-flux-mirror-20260515`, `v0.2.0-bfs-v2-flux-mirror`
 - Current endpoint config: `workersMax: 1`, `workersMin: 0`, no network volume, H100 80GB-class GPU pool, 150 GB container disk, `executionTimeoutMs: 7200000`.
 - Template env keys: `HF_TOKEN`, `BFS_V2_FLUX_KLEIN_URL`, `BUCKET_ENDPOINT_URL`, `BUCKET_ACCESS_KEY_ID`, `BUCKET_SECRET_ACCESS_KEY`, `OUTPUT_BUCKET_NAME`, `OUTPUT_PUBLIC_BASE`. The Flux Klein env override was applied directly to the experiment template because the native GitHub image did not roll forward after releases.
-- Prewarm: completed on job `4c3690e4-ab6f-442b-8ff7-46da0954cb35-e1` after the Flux Klein mirror override was applied. Queue delay `205120` ms; execution time `881093` ms. Output confirmed core model paths under `models/diffusion_models`, `models/latent_upscale_models`, `models/loras`, `models/loras/ltx-2`, `models/text_encoders`, and `models/vae`.
+- Prewarm: completed on job `8d4d5d25-60ed-425f-89b0-b18acf43c82b-e2` after the Flux Klein mirror override was applied. Queue delay `181778` ms; execution time `199051` ms. Output confirmed core model paths under `models/diffusion_models`, `models/latent_upscale_models`, `models/loras`, `models/loras/ltx-2`, `models/text_encoders`, and `models/vae`.
 - Smoke test: blocked until a fresh signed target MP4 URL is provided. The CEL-200 URL supplied on 2026-05-14 expired at `2026-05-14T06:08:09Z`.
 - Completion audit: `docs/cel-200-completion-audit.md`
