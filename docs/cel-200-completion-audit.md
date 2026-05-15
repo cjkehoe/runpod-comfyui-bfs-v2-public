@@ -1,0 +1,39 @@
+# CEL-200 Completion Audit
+
+## Objective
+
+Create a dedicated RunPod/ComfyUI endpoint that runs Alissonerdx BFS Best-Face-Swap-Video V2 exactly as intended by the author/community, then prove it works with the CEL-200 source face image and target MP4.
+
+## Evidence Checklist
+
+| Requirement | Evidence | Status |
+| --- | --- | --- |
+| Dedicated local repo under `/Users/chriskehoe/Documents/Repositories/Empire/runpod` | `/Users/chriskehoe/Documents/Repositories/Empire/runpod/runpod-comfyui-bfs-v2` | Complete |
+| Do not modify existing production I2V workflow or endpoint | Separate repo, separate endpoint `0apsddjr33ry7p`; existing I2V endpoint not changed | Complete |
+| Use native RunPod GitHub integration, no GHCR | Public mirror `cjkehoe/runpod-comfyui-bfs-v2-public`; Dockerfile/test asserts no GHCR | Complete |
+| Preserve V2 source workflow | `workflows/workflow_ltx2_head_swap_drag_and_drop_v2.0.source.json`, SHA256 `fd6a297e56a9a794c63df6bc4bd9c837f99ebd7937ac2e8214ee1731a13a741e` | Complete |
+| Determine direct photo conditioning vs first-frame anchoring | `README.md` and `docs/bfs-v2-first-frame-anchor.md` document V2 first-frame head-swap anchoring | Complete |
+| Preserve intended inputs | Handler accepts `source_face_image_url`, `target_video_url`, optional prompt/negative/seed/settings | Complete |
+| Add workflow ID | `bfs_ltx23_head_swap_v2` | Complete |
+| Identify custom nodes and model assets | `asset-manifest.json`; Dockerfile pins custom node revisions | Complete |
+| Add smoke submit and polling support | `scripts/smoke_submit.py` with prewarm, submit, poll, output download, ffprobe support, and URL preflight | Complete |
+| Local validation | `python -m unittest -v`, `python -m compileall .`, JSON checks, `git diff --check` passed after latest code/status changes | Complete |
+| Prewarm/download model set | RunPod job `4c3690e4-ab6f-442b-8ff7-46da0954cb35-e1` completed; execution `881093` ms; model paths downloaded | Complete |
+| Submit one real test using provided media | Target MP4 signed URL fails preflight with HTTP 403; no substitute media used | Blocked |
+| Verify output MP4 reachable | No real generation output yet | Blocked |
+| Run ffprobe for video/audio streams | No real generation output yet | Blocked |
+| Capture runtime, GPU/worker, disk, OOM/perf issues | Prewarm runtime captured; generation runtime/quality not available until smoke can run | Partial |
+| Final recommendation | Cannot promote or reject on quality until real smoke succeeds | Blocked |
+
+## Current RunPod State
+
+- Endpoint: `0apsddjr33ry7p` / `runpod-comfyui-bfs-v2-public`
+- Template: `27upkmyvti`
+- Image observed: `registry.runpod.net/cjkehoe-runpod-comfyui-bfs-v2-public-main-dockerfile:80877f353`
+- Template env keys: `HF_TOKEN`, `BFS_V2_FLUX_KLEIN_URL`
+- Endpoint config: `workersMax: 1`, `workersMin: 0`, no network volume, 150 GB container disk, H100 80GB-class GPU pool, 2-hour execution timeout
+- Prewarm result: completed on job `4c3690e4-ab6f-442b-8ff7-46da0954cb35-e1`
+
+## Remaining Blocker
+
+The CEL-200 target object exists in production Supabase metadata as private `celebmakerai-user-media`, but the supplied signed URL is expired and returns HTTP 403. The approved root production env only contains Supabase credentials, not R2 signing credentials, and the local Heroku login has no apps. A fresh R2-signed URL for the same target object is required before submitting the real smoke job.
