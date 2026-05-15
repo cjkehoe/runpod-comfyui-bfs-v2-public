@@ -11,6 +11,7 @@
 - RunPod template: `27upkmyvti`
 - Template image observed: `registry.runpod.net/cjkehoe-runpod-comfyui-bfs-v2-public-main-dockerfile:80877f353`
 - Endpoint config: `workersMax: 1`, `workersMin: 0`, no network volume, 150 GB container disk, H100 80GB-class GPU pool, 2-hour execution timeout
+- Template env keys include `HF_TOKEN`, `BFS_V2_FLUX_KLEIN_URL`, and the `runpod/worker-comfyui` output bucket keys used by the working I2V template.
 
 ## Workflow Source
 

@@ -30,10 +30,11 @@ Create a dedicated RunPod/ComfyUI endpoint that runs Alissonerdx BFS Best-Face-S
 - Endpoint: `0apsddjr33ry7p` / `runpod-comfyui-bfs-v2-public`
 - Template: `27upkmyvti`
 - Image observed: `registry.runpod.net/cjkehoe-runpod-comfyui-bfs-v2-public-main-dockerfile:80877f353`
-- Template env keys: `HF_TOKEN`, `BFS_V2_FLUX_KLEIN_URL`
+- Template env keys: `HF_TOKEN`, `BFS_V2_FLUX_KLEIN_URL`, `BUCKET_ENDPOINT_URL`, `BUCKET_ACCESS_KEY_ID`, `BUCKET_SECRET_ACCESS_KEY`, `OUTPUT_BUCKET_NAME`, `OUTPUT_PUBLIC_BASE`
 - Endpoint config: `workersMax: 1`, `workersMin: 0`, `workersStandby: 1`, no network volume, 150 GB container disk, H100 80GB-class GPU pool, 2-hour execution timeout
 - Prewarm result: completed on job `4c3690e4-ab6f-442b-8ff7-46da0954cb35-e1`
 - Cache note: because there is no network volume and `workersMin` is zero, prewarm proves the model set can download successfully but does not guarantee model files persist until a future smoke job. If a fresh signed URL is not available immediately, expect the smoke job to incur cold-start/model-download time again.
+- Output storage note: the experiment template has the same `runpod/worker-comfyui` output bucket env keys used by the working I2V template, so the future smoke job should be able to return a reachable MP4 URL if generation succeeds.
 
 ## Remaining Blocker
 
