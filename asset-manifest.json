@@ -1,0 +1,239 @@
+{
+  "name": "runpod-comfyui-bfs-v2",
+  "mode": "bfs_ltx23_head_swap_v2_first_frame_anchor",
+  "source_workflows": [
+    {
+      "workflow_id": "bfs_ltx23_head_swap_v2",
+      "source": "Alissonerdx/BFS-Best-Face-Swap-Video workflow_ltx2_head_swap_drag_and_drop_v2.0.json",
+      "source_workflow_url": "https://huggingface.co/Alissonerdx/BFS-Best-Face-Swap-Video/raw/main/workflows/workflow_ltx2_head_swap_drag_and_drop_v2.0.json",
+      "source_workflow_sha256": "fd6a297e56a9a794c63df6bc4bd9c837f99ebd7937ac2e8214ee1731a13a741e",
+      "local_copy": "workflows/workflow_ltx2_head_swap_drag_and_drop_v2.0.source.json",
+      "operating_mode": "V2 first-frame head-swap anchoring, the author-recommended mode for reliability. The graph creates the swapped first frame internally using the embedded Flux/Klein subgraph, then propagates that anchor through the LTX-2 V2 head-swap pass."
+    }
+  ],
+  "custom_nodes": [
+    {
+      "name": "ComfyUI-LTXVideo",
+      "repo": "https://github.com/Lightricks/ComfyUI-LTXVideo.git",
+      "revision": "2acf7af8991f33b5cc06ec26753cb6e88e057d04",
+      "required": true,
+      "reason": "LTXV guide conditioning, AV latent handling, audio VAE encode/decode, crop guides, schedulers, and LTX image-to-video nodes used by the V2 graph."
+    },
+    {
+      "name": "ComfyUI-KJNodes",
+      "repo": "https://github.com/kijai/ComfyUI-KJNodes.git",
+      "revision": "fca78c93f034c6e36080d64da83afe00bd5dbba6",
+      "required": true,
+      "reason": "ImageResizeKJv2, GetImageRangeFromBatch, ImageCropByMask, ImageConcatMulti, BlockifyMask, GrowMaskWithBlur, PathchSageAttentionKJ, and LTX guide helper nodes."
+    },
+    {
+      "name": "ComfyUI-VideoHelperSuite",
+      "repo": "https://github.com/Kosinkadink/ComfyUI-VideoHelperSuite.git",
+      "revision": "2984ec4c4b93292421888f38db74a5e8802a8ff8",
+      "required": true,
+      "reason": "VHS_LoadVideo, VHS_SelectImages, and VHS_VideoCombine for target MP4 load and final MP4 mux."
+    },
+    {
+      "name": "ComfyUI-GGUF",
+      "repo": "https://github.com/city96/ComfyUI-GGUF.git",
+      "revision": "6ea2651e7df66d7585f6ffee804b20e92fb38b8a",
+      "required": true,
+      "reason": "DualCLIPLoaderGGUF is present in the source V2 LTX text encoder path."
+    },
+    {
+      "name": "ComfyUI-MelBandRoFormer",
+      "repo": "https://github.com/kijai/ComfyUI-MelBandRoFormer.git",
+      "revision": "92c86854e6654f4aacc97484471af95c98ea16d4",
+      "required": true,
+      "reason": "MelBandRoFormerModelLoader and MelBandRoFormerSampler are used by the author workflow's audio conditioning path."
+    },
+    {
+      "name": "ComfyUI-RMBG",
+      "repo": "https://github.com/1038lab/ComfyUI-RMBG.git",
+      "revision": "d7402513f23f58db7d56754b02a4f51a148b4941",
+      "required": true,
+      "reason": "SAM3Segment masks the source face/head and guide face/head/hair for V2 magenta-mask preparation."
+    },
+    {
+      "name": "ComfyUI_Comfyroll_CustomNodes",
+      "repo": "https://github.com/Suzie1/ComfyUI_Comfyroll_CustomNodes.git",
+      "revision": "d78b780ae43fcf8c6b7c6505e6ffb4584281ceca",
+      "required": true,
+      "reason": "CR Color Tint creates the magenta mask tone used by the V2 preparation path."
+    },
+    {
+      "name": "ComfyUI_LayerStyle",
+      "repo": "https://github.com/chflame163/ComfyUI_LayerStyle.git",
+      "revision": "d94bef1ee5ed3656f5ff1bb2830a4ffd94f40935",
+      "required": true,
+      "reason": "LayerFilter: GaussianBlurV2 is used in first-frame mask/blur preparation."
+    },
+    {
+      "name": "ComfyUI_essentials",
+      "repo": "https://github.com/cubiq/ComfyUI_essentials.git",
+      "revision": "9d9f4bedfc9f0321c19faf71855e228c93bd0dc9",
+      "required": true,
+      "reason": "GetImageSize+ compatibility node referenced by the V2 preprocessing graph."
+    },
+    {
+      "name": "ComfyUI-Easy-Use",
+      "repo": "https://github.com/yolain/ComfyUI-Easy-Use.git",
+      "revision": "130c1b5796d9876a5f853fa0bea88e808cfda4ad",
+      "required": true,
+      "reason": "easy cleanGpuUsed and easy clearCacheAll are used after the Flux/Klein first-frame head-swap subgraph."
+    },
+    {
+      "name": "ComfyUI-BFSNodes",
+      "repo": "https://github.com/alisson-anjos/ComfyUI-BFSNodes.git",
+      "revision": "f25c9dd1ec803104c1abb73fb368545f38e73cc3",
+      "required": false,
+      "reason": "Creator-maintained BFS helper repository. V2 source execution does not require V3 ReservedRegionFrameComposer, but it is installed for author workflow compatibility."
+    },
+    {
+      "name": "ComfyUI-VideoOutputBridge",
+      "repo": "vendored",
+      "revision": "local",
+      "required": true,
+      "reason": "Expose VideoHelperSuite MP4 files through RunPod worker-comfyui's standard image upload path."
+    }
+  ],
+  "core_models": [
+    {
+      "filename": "flux-2-klein-9b-fp8.safetensors",
+      "relative_path": "models/diffusion_models",
+      "workflow_ids": ["bfs_ltx23_head_swap_v2"],
+      "url_env": "BFS_V2_FLUX_KLEIN_URL",
+      "default_url": "https://huggingface.co/black-forest-labs/FLUX.2-klein-9b-fp8/resolve/main/flux-2-klein-9b-fp8.safetensors",
+      "download_phase": "request_time_or_manual_prewarm",
+      "notes": "Embedded first-frame head-swap subgraph UNETLoader node 149206."
+    },
+    {
+      "filename": "bfs_head_v1_flux-klein_9b_step3500_rank128.safetensors",
+      "relative_path": "models/loras",
+      "workflow_ids": ["bfs_ltx23_head_swap_v2"],
+      "url_env": "BFS_V2_FLUX_HEAD_LORA_URL",
+      "default_url": "https://huggingface.co/Alissonerdx/BFS-Best-Face-Swap/resolve/main/bfs_head_v1_flux-klein_9b_step3500_rank128.safetensors",
+      "download_phase": "request_time_or_manual_prewarm",
+      "notes": "Author-provided Flux/Klein head-swap LoRA for the first-frame preparation subgraph, strength 1.0."
+    },
+    {
+      "filename": "qwen_3_8b_fp8mixed.safetensors",
+      "relative_path": "models/text_encoders",
+      "workflow_ids": ["bfs_ltx23_head_swap_v2"],
+      "url_env": "BFS_V2_FLUX_QWEN_TEXT_ENCODER_URL",
+      "default_url": "https://huggingface.co/Comfy-Org/flux2-klein-9B/resolve/main/split_files/text_encoders/qwen_3_8b_fp8mixed.safetensors",
+      "download_phase": "request_time_or_manual_prewarm",
+      "notes": "Flux/Klein first-frame subgraph CLIPLoader node 149205."
+    },
+    {
+      "filename": "flux2-vae.safetensors",
+      "relative_path": "models/vae",
+      "workflow_ids": ["bfs_ltx23_head_swap_v2"],
+      "url_env": "BFS_V2_FLUX_VAE_URL",
+      "default_url": "https://huggingface.co/Comfy-Org/flux2-dev/resolve/main/split_files/vae/flux2-vae.safetensors",
+      "download_phase": "request_time_or_manual_prewarm",
+      "notes": "Flux/Klein first-frame subgraph VAE node 149196."
+    },
+    {
+      "filename": "ltx-2-19b-dev-fp8_transformer_only.safetensors",
+      "relative_path": "models/diffusion_models",
+      "workflow_ids": ["bfs_ltx23_head_swap_v2"],
+      "url_env": "BFS_V2_LTX2_DEV_TRANSFORMER_URL",
+      "default_url": "https://huggingface.co/Kijai/LTXV2_comfy/resolve/main/diffusion_models/ltx-2-19b-dev-fp8_transformer_only.safetensors",
+      "download_phase": "request_time_or_manual_prewarm",
+      "notes": "Source workflow UNETLoader node 687."
+    },
+    {
+      "filename": "gemma_3_12B_it_fp8_scaled.safetensors",
+      "relative_path": "models/text_encoders",
+      "workflow_ids": ["bfs_ltx23_head_swap_v2"],
+      "url_env": "BFS_V2_GEMMA_TEXT_ENCODER_URL",
+      "default_url": "https://huggingface.co/Comfy-Org/ltx-2/resolve/main/split_files/text_encoders/gemma_3_12B_it_fp8_scaled.safetensors",
+      "download_phase": "request_time_or_manual_prewarm",
+      "notes": "Source workflow DualCLIPLoaderGGUF node 3 clip_name1."
+    },
+    {
+      "filename": "ltx-2-19b-embeddings_connector_dev_bf16.safetensors",
+      "relative_path": "models/text_encoders",
+      "workflow_ids": ["bfs_ltx23_head_swap_v2"],
+      "url_env": "BFS_V2_LTX2_TEXT_CONNECTOR_URL",
+      "default_url": "https://huggingface.co/Kijai/LTXV2_comfy/resolve/main/text_encoders/ltx-2-19b-embeddings_connector_dev_bf16.safetensors",
+      "download_phase": "request_time_or_manual_prewarm",
+      "notes": "Source workflow DualCLIPLoaderGGUF node 3 clip_name2."
+    },
+    {
+      "filename": "LTX2_video_vae_bf16.safetensors",
+      "relative_path": "models/vae",
+      "workflow_ids": ["bfs_ltx23_head_swap_v2"],
+      "url_env": "BFS_V2_VIDEO_VAE_URL",
+      "default_url": "https://huggingface.co/Kijai/LTXV2_comfy/resolve/main/VAE/LTX2_video_vae_bf16.safetensors",
+      "download_phase": "request_time_or_manual_prewarm",
+      "notes": "Source workflow VAELoader node 4."
+    },
+    {
+      "filename": "LTX2_audio_vae_bf16.safetensors",
+      "relative_path": "models/vae",
+      "workflow_ids": ["bfs_ltx23_head_swap_v2"],
+      "url_env": "BFS_V2_AUDIO_VAE_URL",
+      "default_url": "https://huggingface.co/Kijai/LTXV2_comfy/resolve/main/VAE/LTX2_audio_vae_bf16.safetensors",
+      "download_phase": "request_time_or_manual_prewarm",
+      "notes": "Source workflow VAELoaderKJ node 5 and audio conditioning path."
+    },
+    {
+      "filename": "ltx-2-19b-distilled-lora_resized_dynamic_fro09_avg_rank_175_bf16.safetensors",
+      "relative_path": "models/loras/ltx-2",
+      "workflow_ids": ["bfs_ltx23_head_swap_v2"],
+      "url_env": "BFS_V2_LTX2_DISTILLED_LORA_URL",
+      "default_url": "https://huggingface.co/Kijai/LTXV2_comfy/resolve/main/loras/ltx-2-19b-distilled-lora_resized_dynamic_fro09_avg_rank_175_bf16.safetensors",
+      "download_phase": "request_time_or_manual_prewarm",
+      "notes": "Distilled LTX-2 LoRA used at strength 0.6."
+    },
+    {
+      "filename": "head_swap_ltx2_v2.safetensors",
+      "relative_path": "models/loras",
+      "workflow_ids": ["bfs_ltx23_head_swap_v2"],
+      "url_env": "BFS_V2_HEAD_SWAP_LORA_URL",
+      "default_url": "https://huggingface.co/Alissonerdx/BFS-Best-Face-Swap-Video/resolve/main/ltx-2/head_swap_v2_multimodes.safetensors",
+      "download_phase": "request_time_or_manual_prewarm",
+      "requires_hf_token": false,
+      "notes": "V2 multimode head-swap LoRA; workflow_builder maps the graph's head_swap_ltx2_v2.safetensors name to this public asset, strength 1.0."
+    },
+    {
+      "filename": "ltx-2-spatial-upscaler-x2-1.0.safetensors",
+      "relative_path": "models/latent_upscale_models",
+      "workflow_ids": ["bfs_ltx23_head_swap_v2"],
+      "url_env": "BFS_V2_SPATIAL_UPSCALER_URL",
+      "default_url": "https://huggingface.co/Lightricks/LTX-2/resolve/main/ltx-2-spatial-upscaler-x2-1.0.safetensors",
+      "download_phase": "request_time_or_manual_prewarm",
+      "notes": "Source workflow LatentUpscaleModelLoader node 6."
+    },
+    {
+      "filename": "MelBandRoformer_fp32.safetensors",
+      "relative_path": "models/diffusion_models",
+      "workflow_ids": ["bfs_ltx23_head_swap_v2"],
+      "url_env": "BFS_V2_MELBAND_ROFORMER_URL",
+      "default_url": "https://huggingface.co/Kijai/MelBandRoFormer_comfy/resolve/main/MelBandRoformer_fp32.safetensors",
+      "download_phase": "request_time_or_manual_prewarm",
+      "notes": "Source workflow MelBandRoFormerModelLoader node 302."
+    }
+  ],
+  "runtime_inputs": {
+    "source_face_image_url": "HTTP(S) image URL staged into /comfyui/input and connected to LoadImage node 13. Legacy aliases include source_face_image, source_image_url, face_image, and image.",
+    "target_video_url": "HTTP(S) MP4 URL staged into /comfyui/input and connected to VHS_LoadVideo node 28.",
+    "prompt": "Optional prompt; defaults to the author's V2 trigger, head_swap.",
+    "final_output": "MP4 URL from the creator final Head Swap Result Upscaled node 351, bridged through VideoOutputBridge node 9901."
+  },
+  "serverless_adaptations": [
+    "Source workflow JSON is preserved unchanged on disk, then converted from ComfyUI UI graph to RunPod API prompt at request time.",
+    "Set/Get/primitive UI routing and embedded subgraphs are resolved into direct API values.",
+    "The source rgthree Power Lora Loader nodes are converted to equivalent sequential LoraLoaderModelOnly nodes so serverless API execution does not require UI-only rgthree state.",
+    "Runtime image/video filenames replace the demo LoadImage node 13 and VHS_LoadVideo node 28 values.",
+    "The author-recommended first-frame head-swap anchoring path is preserved; this endpoint does not silently switch to V3 persistent-template conditioning.",
+    "VideoOutputBridge node 9901 is added after the creator final VHS_VideoCombine node 351 for RunPod uploads."
+  ],
+  "secrets": {
+    "runpod_api_key": "Use RUNPOD_API_KEY locally or RunPod API credentials from CEL-200; never commit or hardcode.",
+    "hf_token": "Set HF_TOKEN as a RunPod secret/env var if Hugging Face downloads require authentication.",
+    "civitai_token": "Not required for the BFS V2 asset set."
+  }
+}

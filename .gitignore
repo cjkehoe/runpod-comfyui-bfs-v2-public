@@ -1,0 +1,11 @@
+__pycache__/
+.pytest_cache/
+*.py[cod]
+.DS_Store
+.codex-tmp/
+benchmarks/
+.runpod-results/
+outputs/
+.env
+.env.*
+!.env.example
