@@ -85,6 +85,7 @@ Cache caveat: there is no network volume and `workersMin` is zero, so prewarm pr
 - Production Supabase Storage does not contain a `celebmakerai-user-media` bucket in this project, and object lookup for the exact key returned HTTP 400, so Supabase Storage signing is not an alternate source for this MP4.
 - Local Vercel CLI scopes do not include the CelebMaker frontend project, so the deployed frontend signing path is not available from this session.
 - The production frontend generated-video refresh route was checked in Chrome for the exact `generated_videos.id` on both canonical and `www` hosts; both returned `{"error":"Unauthorized"}`, so the current browser session cannot provide the private target URL.
+- Local filesystem cache/download locations were searched for the exact target object filename; no local copy of the target MP4 was found.
 
 ## Smoke Test Status
 
