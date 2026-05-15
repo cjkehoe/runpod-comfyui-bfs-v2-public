@@ -38,3 +38,8 @@ Create a dedicated RunPod/ComfyUI endpoint that runs Alissonerdx BFS Best-Face-S
 ## Remaining Blocker
 
 The CEL-200 target object exists in production Supabase metadata as private `celebmakerai-user-media`, but the supplied signed URL is expired and returns HTTP 403. The approved root production env only contains Supabase credentials, not R2 signing credentials, and the local Heroku login has no apps. A fresh R2-signed URL for the same target object is required before submitting the real smoke job.
+
+Additional read-only checks:
+
+- `generated_videos.video_url`, `r2_object_name`, and `video_storage_key` all point to the same private object key.
+- A `media_backup_jobs` row exists for the same source bucket/key with `status = succeeded`, but the row stores only a backup bucket/key. Common public S3 URL forms for that stored backup key returned 404, so the backup copy does not provide a usable unauthenticated input URL from this environment.
