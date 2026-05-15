@@ -47,6 +47,13 @@ class DockerfileStartupTests(unittest.TestCase):
         self.assertIn("COPY workflow_builder.py /opt/bfs-v2/workflow_builder.py", dockerfile)
         self.assertIn("COPY workflows /opt/bfs-v2/workflows", dockerfile)
 
+    def test_dockerfile_documents_flux_klein_download_override(self):
+        dockerfile = Path(__file__).with_name("Dockerfile").read_text(encoding="utf-8")
+
+        self.assertIn("CEL-200 test-time download-source override", dockerfile)
+        self.assertIn("ENV BFS_V2_FLUX_KLEIN_URL=", dockerfile)
+        self.assertIn("flux-2-klein-9b-fp8.safetensors", dockerfile)
+
 
 if __name__ == "__main__":
     unittest.main()

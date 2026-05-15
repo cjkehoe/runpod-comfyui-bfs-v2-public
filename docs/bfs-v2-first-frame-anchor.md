@@ -40,6 +40,10 @@ This endpoint uses the recommended mode. The source face image is not passed dir
 - `ltx-2-spatial-upscaler-x2-1.0.safetensors`
 - `MelBandRoformer_fp32.safetensors`
 
+## Flux Klein Download Source
+
+The original graph names `flux-2-klein-9b-fp8.safetensors` from Black Forest Labs. The CEL-200 endpoint prewarm failed against that gated upstream URL with `403 Forbidden` after `HF_TOKEN` was configured, which indicates the token/account still lacks access to the BFL model terms. For this isolated test build, `BFS_V2_FLUX_KLEIN_URL` is baked in to fetch a public mirror of the same filename. The workflow graph, model filename, first-frame anchoring path, and V2 LoRAs remain unchanged.
+
 ## Validation
 
 Local validation:

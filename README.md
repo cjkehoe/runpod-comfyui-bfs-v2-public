@@ -60,6 +60,8 @@ Set these as RunPod secrets/env vars where available:
 - `HF_TOKEN` or `HUGGINGFACE_HUB_TOKEN` if Hugging Face downloads require authentication.
 - R2 output env vars used by `runpod/worker-comfyui`: `BUCKET_ENDPOINT_URL`, `BUCKET_ACCESS_KEY_ID`, `BUCKET_SECRET_ACCESS_KEY`, `OUTPUT_BUCKET_NAME`, `OUTPUT_PUBLIC_BASE`.
 
+The source workflow expects Black Forest Labs `flux-2-klein-9b-fp8.safetensors`. During CEL-200 prewarm, the endpoint reached Hugging Face with the configured token but received `403 Forbidden` from the gated upstream model repo. For this isolated experiment only, the Dockerfile sets `BFS_V2_FLUX_KLEIN_URL` to a public mirror of the same filename so the V2 graph can be tested without replacing the Flux/Klein first-frame method or moving to V3. If the HF account gains direct BFL access later, remove that baked override or replace it with the official BFL URL in endpoint env.
+
 Prewarm:
 
 ```bash

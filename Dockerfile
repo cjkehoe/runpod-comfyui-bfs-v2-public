@@ -65,6 +65,10 @@ ENV NETWORK_VOLUME_ROOT=/workspace
 ENV NETWORK_VOLUME_CACHE_MODE=read_only
 ENV ASSET_MANIFEST_PATH=/opt/bfs-v2/asset-manifest.json
 ENV PYTHONPATH=/opt/bfs-v2
+# CEL-200 test-time download-source override: the author workflow names this
+# Black Forest Labs model, but the available HF token currently receives 403
+# from the gated upstream repo even after being passed to the endpoint.
+ENV BFS_V2_FLUX_KLEIN_URL=https://huggingface.co/shuko-tuto/cf-diffusion_models/resolve/main/flux/flux-2-klein-9b-fp8.safetensors
 
 COPY asset-manifest.json /opt/bfs-v2/asset-manifest.json
 COPY workflows /opt/bfs-v2/workflows
