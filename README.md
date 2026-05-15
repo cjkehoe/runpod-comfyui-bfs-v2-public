@@ -93,9 +93,12 @@ git diff --check
 
 ## CEL-200 Endpoint Status
 
-- Endpoint ID: pending
-- Endpoint name: pending
-- Template ID: pending
-- Worker: pending
-- Prewarm: pending
+- Endpoint ID: `0apsddjr33ry7p`
+- Endpoint name: `runpod-comfyui-bfs-v2-public`
+- Template ID: `27upkmyvti`
+- GitHub repo: `https://github.com/cjkehoe/runpod-comfyui-bfs-v2-public`
+- Latest source commit: `e174e75`
+- RunPod image observed after releases: `registry.runpod.net/cjkehoe-runpod-comfyui-bfs-v2-public-main-dockerfile:80877f353`
+- Releases published to trigger native GitHub rebuild: `bfs-v2-flux-mirror-20260515`, `v0.2.0-bfs-v2-flux-mirror`
+- Prewarm: blocked. The existing image lacks the `BFS_V2_FLUX_KLEIN_URL` override and fails with `403 Forbidden` against the gated Black Forest Labs Flux Klein URL. Updating the template env through API was not authorized, and the RunPod GitHub release trigger did not roll the image forward during this session.
 - Smoke test: blocked until a fresh signed target MP4 URL is provided. The CEL-200 URL supplied on 2026-05-14 expired at `2026-05-14T06:08:09Z`.
