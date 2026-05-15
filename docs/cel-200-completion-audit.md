@@ -18,7 +18,7 @@ Create a dedicated RunPod/ComfyUI endpoint that runs Alissonerdx BFS Best-Face-S
 | Identify custom nodes and model assets | `asset-manifest.json`; Dockerfile pins custom node revisions | Complete |
 | Add smoke submit and polling support | `scripts/smoke_submit.py` with prewarm, submit, poll, output download, ffprobe support, and URL preflight | Complete |
 | Local validation | `python -m unittest -v`, `python -m compileall .`, JSON checks, `git diff --check` passed after latest code/status changes | Complete |
-| Prewarm/download model set | RunPod job `4c3690e4-ab6f-442b-8ff7-46da0954cb35-e1` completed; execution `881093` ms; model paths downloaded | Complete |
+| Prewarm/download model set | RunPod job `4c3690e4-ab6f-442b-8ff7-46da0954cb35-e1` completed; execution `881093` ms; model paths downloaded. Current endpoint has no network volume and `workersMin: 0`, so a later cold worker may need to re-download models. | Complete, but cache persistence is weak |
 | Submit one real test using provided media | Target MP4 signed URL fails preflight with HTTP 403; no substitute media used | Blocked |
 | Verify output MP4 reachable | No real generation output yet | Blocked |
 | Run ffprobe for video/audio streams | No real generation output yet | Blocked |
@@ -31,8 +31,9 @@ Create a dedicated RunPod/ComfyUI endpoint that runs Alissonerdx BFS Best-Face-S
 - Template: `27upkmyvti`
 - Image observed: `registry.runpod.net/cjkehoe-runpod-comfyui-bfs-v2-public-main-dockerfile:80877f353`
 - Template env keys: `HF_TOKEN`, `BFS_V2_FLUX_KLEIN_URL`
-- Endpoint config: `workersMax: 1`, `workersMin: 0`, no network volume, 150 GB container disk, H100 80GB-class GPU pool, 2-hour execution timeout
+- Endpoint config: `workersMax: 1`, `workersMin: 0`, `workersStandby: 1`, no network volume, 150 GB container disk, H100 80GB-class GPU pool, 2-hour execution timeout
 - Prewarm result: completed on job `4c3690e4-ab6f-442b-8ff7-46da0954cb35-e1`
+- Cache note: because there is no network volume and `workersMin` is zero, prewarm proves the model set can download successfully but does not guarantee model files persist until a future smoke job. If a fresh signed URL is not available immediately, expect the smoke job to incur cold-start/model-download time again.
 
 ## Remaining Blocker
 
