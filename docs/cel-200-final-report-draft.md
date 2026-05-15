@@ -81,6 +81,7 @@ Cache caveat: there is no network volume and `workersMin` is zero, so prewarm pr
 - Target video: the supplied signed R2 URL is expired and returns HTTP 403.
 - Production Supabase confirms the exact object exists in `generated_videos` as private `celebmakerai-user-media`, with `video_url`, `r2_object_name`, and `video_storage_key` all pointing to the same object key.
 - A successful `media_backup_jobs` row exists for the same object, but only private backup bucket/key metadata is available from this environment; common public S3 URL forms returned 404.
+- The experiment template's output bucket credentials were tested in memory against the private target object and returned HTTP 404, so they cannot be used as source-media signing credentials.
 
 ## Smoke Test Status
 

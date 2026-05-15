@@ -47,3 +47,4 @@ Additional read-only checks:
 - `generated_videos.video_url`, `r2_object_name`, and `video_storage_key` all point to the same private object key.
 - A `media_backup_jobs` row exists for the same source bucket/key with `status = succeeded`, but the row stores only a backup bucket/key. Common public S3 URL forms for that stored backup key returned 404, so the backup copy does not provide a usable unauthenticated input URL from this environment.
 - `scripts/sign_user_media_url.py` and `scripts/smoke_submit.py --target-video-r2-key` can mint a fresh URL once approved R2 credentials are available. They do not remove the blocker because those credentials are not present in the approved local environment.
+- The experiment template's output bucket credentials were tested in memory against the exact `celebmakerai-user-media` target object; the signed range-read returned HTTP 404, so output-storage credentials cannot be used to fetch the private input media.
