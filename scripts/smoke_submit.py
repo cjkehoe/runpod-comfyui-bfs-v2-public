@@ -7,6 +7,7 @@ import sys
 import time
 from pathlib import Path
 from typing import Any, Dict, List, Optional
+from urllib.parse import urlparse
 
 import requests
 
@@ -43,6 +44,21 @@ def _request(method: str, url: str, api_key: str, **kwargs: Any) -> Dict[str, An
     if not isinstance(data, dict):
         raise RuntimeError(f"RunPod returned non-object JSON: {data!r}")
     return data
+
+
+def _preflight_url(label: str, url: Optional[str]) -> None:
+    if not url:
+        raise SystemExit(f"{label} is required")
+    parsed = urlparse(url)
+    if parsed.scheme != "https" or not parsed.netloc:
+        raise SystemExit(f"{label} must be an HTTPS URL")
+
+    try:
+        with requests.get(url, headers={"Range": "bytes=0-0"}, stream=True, timeout=60) as response:
+            if response.status_code >= 400:
+                raise SystemExit(f"{label} failed preflight with HTTP {response.status_code}")
+    except requests.RequestException as exc:
+        raise SystemExit(f"{label} failed preflight: {exc.__class__.__name__}") from exc
 
 
 def _read_prompt(args: argparse.Namespace) -> str:
@@ -186,6 +202,7 @@ def parse_args(argv: List[str]) -> argparse.Namespace:
     parser.add_argument("--base-resolution", type=int)
     parser.add_argument("--skip-first-frames", type=int, default=0)
     parser.add_argument("--debug-outputs", action="store_true")
+    parser.add_argument("--skip-url-preflight", action="store_true", help="Skip source/target URL reachability checks.")
     parser.add_argument("--timeout-seconds", type=int, default=7200)
     parser.add_argument("--poll-seconds", type=int, default=10)
     parser.add_argument("--verify-audio", action="store_true", help="Run ffprobe against completed MP4 URLs when available.")
@@ -205,6 +222,10 @@ def parse_args(argv: List[str]) -> argparse.Namespace:
 
 def main(argv: List[str]) -> int:
     args = parse_args(argv)
+    if not args.prewarm and not args.skip_url_preflight:
+        _preflight_url("source_face_image_url", args.source_face_image_url)
+        _preflight_url("target_video_url", args.target_video_url)
+
     api_key = _read_runpod_api_key()
     payload = _build_payload(args)
     job_id = _submit(args.endpoint_id, api_key, payload)
