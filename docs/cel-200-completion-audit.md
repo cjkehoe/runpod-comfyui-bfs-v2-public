@@ -16,8 +16,8 @@ Create a dedicated RunPod/ComfyUI endpoint that runs Alissonerdx BFS Best-Face-S
 | Preserve intended inputs | Handler accepts `source_face_image_url`, `target_video_url`, optional prompt/negative/seed/settings | Complete |
 | Add workflow ID | `bfs_ltx23_head_swap_v2` | Complete |
 | Identify custom nodes and model assets | `asset-manifest.json`; Dockerfile pins custom node revisions | Complete |
-| Add smoke submit and polling support | `scripts/smoke_submit.py` with prewarm, submit, poll, output download, ffprobe support, and URL preflight | Complete |
-| Local validation | `python -m unittest -v`, `python -m compileall .`, JSON checks, `git diff --check` passed after latest code/status changes | Complete |
+| Add smoke submit and polling support | `scripts/smoke_submit.py` with prewarm, submit, poll, output download, ffprobe support, URL preflight, and in-memory R2 target signing via `--target-video-r2-key` | Complete |
+| Local validation | `python -m unittest -v` passes 26 tests; `python -m compileall .`, JSON checks, and `git diff --check` passed after latest smoke tooling changes | Complete |
 | Prewarm/download model set | RunPod job `4c3690e4-ab6f-442b-8ff7-46da0954cb35-e1` completed; execution `881093` ms; model paths downloaded. Current endpoint has no network volume and `workersMin: 0`, so a later cold worker may need to re-download models. | Complete, but cache persistence is weak |
 | Submit one real test using provided media | Target MP4 signed URL fails preflight with HTTP 403; no substitute media used | Blocked |
 | Verify output MP4 reachable | No real generation output yet | Blocked |
@@ -43,3 +43,4 @@ Additional read-only checks:
 
 - `generated_videos.video_url`, `r2_object_name`, and `video_storage_key` all point to the same private object key.
 - A `media_backup_jobs` row exists for the same source bucket/key with `status = succeeded`, but the row stores only a backup bucket/key. Common public S3 URL forms for that stored backup key returned 404, so the backup copy does not provide a usable unauthenticated input URL from this environment.
+- `scripts/sign_user_media_url.py` and `scripts/smoke_submit.py --target-video-r2-key` can mint a fresh URL once approved R2 credentials are available. They do not remove the blocker because those credentials are not present in the approved local environment.
