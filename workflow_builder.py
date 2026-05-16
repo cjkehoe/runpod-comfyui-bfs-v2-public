@@ -52,13 +52,31 @@ BFS_V2_SERVERLESS_ADAPTATIONS = [
 
 BFS_V2_WIDGET_OVERRIDES = {
     "BasicScheduler": ["scheduler", "steps", "denoise"],
+    "BlockifyMask": ["block_size", "device"],
     "CFGGuider": ["cfg"],
     "CLIPTextEncode": ["text"],
     "CLIPLoader": ["clip_name", "type", "device"],
+    "CR Color Tint": ["strength", "mode", "color"],
     "DualCLIPLoader": ["clip_name1", "clip_name2", "type", "device"],
     "DualCLIPLoaderGGUF": ["clip_name1", "clip_name2", "type"],
+    "EmptyFlux2LatentImage": ["width", "height", "batch_size"],
+    "Flux2Scheduler": ["steps", "width", "height"],
+    "GetImageRangeFromBatch": ["start_index", "num_frames"],
+    "GrowMaskWithBlur": [
+        "expand",
+        "incremental_expandrate",
+        "tapered_corners",
+        "flip_input",
+        "blur_radius",
+        "lerp_alpha",
+        "decay_factor",
+        "fill_holes",
+    ],
     "UnetLoaderGGUF": ["unet_name"],
+    "ImageCompositeMasked": ["x", "y", "resize_source"],
     "ImageConcanate": ["direction", "match_image_size"],
+    "ImageScale": ["upscale_method", "width", "height", "crop"],
+    "ImageScaleBy": ["upscale_method", "scale_by"],
     "ImageResizeKJv2": [
         "width",
         "height",
@@ -71,11 +89,16 @@ BFS_V2_WIDGET_OVERRIDES = {
     ],
     "KSamplerSelect": ["sampler_name"],
     "LatentUpscaleModelLoader": ["model_name"],
+    "LayerFilter: GaussianBlurV2": ["blur"],
     "LoadImage": ["image", "upload"],
     "LoraLoader": ["lora_name", "strength_model", "strength_clip"],
     "LoraLoaderModelOnly": ["lora_name", "strength_model"],
     "LTXVConditioning": ["frame_rate"],
-    "MelBandRoFormerModelLoader": ["model"],
+    "LTXVImgToVideoInplace": ["strength", "bypass"],
+    "LTXVScheduler": ["steps", "max_shift", "base_shift", "stretch", "terminal"],
+    "ManualSigmas": ["sigmas"],
+    "MelBandRoFormerModelLoader": ["model_name"],
+    "PathchSageAttentionKJ": ["sage_attention", "allow_compile"],
     "RandomNoise": ["noise_seed", "control_after_generate"],
     "ReservedRegionFrameComposer": [
         "region_position",
@@ -95,23 +118,24 @@ BFS_V2_WIDGET_OVERRIDES = {
     ],
     "SAM3Segment": [
         "prompt",
-        "mode",
-        "threshold",
-        "dilation",
-        "blur",
-        "expand",
-        "padding",
+        "output_mode",
+        "confidence_threshold",
+        "max_segments",
+        "segment_pick",
+        "mask_blur",
+        "mask_offset",
         "device",
-        "invert_mask",
-        "preview",
+        "invert_output",
+        "unload_model",
         "background",
         "background_color",
     ],
     "SolidMask": ["value", "width", "height"],
-    "TrimAudioDuration": ["start_time", "duration"],
+    "TrimAudioDuration": ["start_index", "duration"],
     "UNETLoader": ["unet_name", "weight_dtype"],
     "VAELoader": ["vae_name"],
-    "VAELoaderKJ": ["vae_name", "device", "dtype"],
+    "VAEDecodeTiled": ["tile_size", "overlap", "temporal_size", "temporal_overlap"],
+    "VAELoaderKJ": ["vae_name", "device", "weight_dtype"],
     "VHS_LoadVideo": [
         "video",
         "force_rate",
@@ -680,11 +704,11 @@ def _apply_runtime_values(
     if "5" in workflow:
         _set_input(workflow, "5", "vae_name", BFS_V2_AUDIO_VAE_NAME)
         _set_input(workflow, "5", "device", "main_device")
-        _set_input(workflow, "5", "dtype", "bf16")
+        _set_input(workflow, "5", "weight_dtype", "bf16")
     if "6" in workflow:
         _set_input(workflow, "6", "model_name", BFS_V2_SPATIAL_UPSCALER_NAME)
     if "302" in workflow:
-        _set_input(workflow, "302", "model", BFS_V2_MELBAND_MODEL_NAME)
+        _set_input(workflow, "302", "model_name", BFS_V2_MELBAND_MODEL_NAME)
 
     for lora_node_id in ("7", "7401", "37401"):
         if lora_node_id in workflow:

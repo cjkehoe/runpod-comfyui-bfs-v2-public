@@ -59,6 +59,18 @@ class BfsV2WorkflowBuilderTests(unittest.TestCase):
         self.assertEqual(built["351"]["inputs"]["images"], ["481", 0])
         self.assertEqual(built["351"]["inputs"]["filename_prefix"], f"{workflow_builder.BFS_V2_WORKFLOW_ID}_final")
         self.assertEqual(built["9901"]["inputs"]["filenames"], ["351", 0])
+        self.assertEqual(built["36"]["inputs"]["start_index"], 0)
+        self.assertEqual(built["36"]["inputs"]["num_frames"], 1)
+        self.assertEqual(built["83"]["inputs"]["strength"], 1)
+        self.assertFalse(built["83"]["inputs"]["bypass"])
+        self.assertEqual(built["162"]["inputs"]["steps"], 8)
+        self.assertEqual(built["399"]["inputs"]["sigmas"], "0.909375, 0.725, 0.421875, 0.0")
+        self.assertEqual(built["482"]["inputs"]["output_mode"], "Merged")
+        self.assertEqual(built["482"]["inputs"]["confidence_threshold"], 0.5)
+        self.assertEqual(built["733"]["inputs"]["expand"], 20)
+        self.assertEqual(built["733"]["inputs"]["lerp_alpha"], 1)
+        self.assertEqual(built["647"]["inputs"]["tile_size"], 512)
+        self.assertEqual(built["647"]["inputs"]["temporal_overlap"], 8)
 
     def test_preserves_creator_model_names_and_lora_strengths(self):
         result = workflow_builder.build_bfs_v2_job_input(
@@ -75,6 +87,8 @@ class BfsV2WorkflowBuilderTests(unittest.TestCase):
         self.assertEqual(built["3"]["inputs"]["clip_name2"], workflow_builder.BFS_V2_TEXT_CONNECTOR_NAME)
         self.assertEqual(built["4"]["inputs"]["vae_name"], workflow_builder.BFS_V2_VIDEO_VAE_NAME)
         self.assertEqual(built["5"]["inputs"]["vae_name"], workflow_builder.BFS_V2_AUDIO_VAE_NAME)
+        self.assertEqual(built["5"]["inputs"]["weight_dtype"], "bf16")
+        self.assertEqual(built["302"]["inputs"]["model_name"], workflow_builder.BFS_V2_MELBAND_MODEL_NAME)
         self.assertEqual(built["7401"]["inputs"]["lora_name"], workflow_builder.BFS_V2_DISTILLED_LORA_NAME)
         self.assertEqual(built["7401"]["inputs"]["strength_model"], 0.6)
         self.assertEqual(built["7402"]["inputs"]["lora_name"], workflow_builder.BFS_V2_HEAD_SWAP_LORA_NAME)
